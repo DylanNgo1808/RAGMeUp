@@ -1,37 +1,43 @@
 @(datasets: Seq[String], chats: Seq[models.Chat])
-<nav id="right-sidebar" class="bg-light sidebar sidebar-right" style="height: 100%; padding: 5px;">
-    <h5>Select datasets to chat on</h5>
-    <div id="type-selector" class="d-flex flex-wrap">
+
+<div class="d-flex flex-column h-100 p-3"> 
+
+    <h4 class="mb-3">Dylan AI Support</h4>
+    
+    <div class="d-grid gap-2 mb-3">
+        <a href="@controllers.routes.HomeController.index()" class="btn btn-primary">
+            <i class="fa-solid fa-plus me-2"></i> New Chat
+        </a>
+        <a href="@controllers.routes.HomeController.add()" class="btn btn-outline-secondary">
+            <i class="fa-solid fa-file-arrow-up me-2"></i> Add Document
+        </a>
+    </div>
+    
+    <h6 class="text-muted mt-2 mb-2" style="font-size: 0.9rem;">Select datasets to chat on</h6>
+    <div id="type-selector" class="d-flex flex-wrap mb-3">
         @for(dataset <- datasets) {
             <div class="dataset-item" data-type="@dataset">@{if (dataset == "") "_blank_" else dataset}</div>
         }
     </div>
 
-    <div class="row mb-2 mt-4">
-        <div class="col-10">
-            <h5>Previous chats</h5>
-        </div>
-        <div class="col-2">
-            <a href="@controllers.routes.HomeController.index()" class="text-dark" style="font-size: 1.2rem;">
-                <i class="fa-solid fa-plus"></i>
-            </a>
-        </div>
-    </div>
-    <ul class="nav flex-column">
+    <h6 class="text-muted mt-2 mb-2" style="font-size: 0.9rem;">Previous chats</h6>
+    
+    <ul class="nav flex-column" style="overflow-y: auto; flex-grow: 1;">
         @for(chat <- chats) {
-        <li class="nav-item mb-2">
-            <a href="@controllers.routes.HomeController.loadChat(chat.id)" class="nav-link text-dark" title="@chat.title" style="font-size: 0.8rem; white-space: nowrap;">
-                <i class="delconvo fa-solid fa-trash-can" style="color: #a30808; margin-left: -5px; padding-right: 2px; z-index: 10;" data-id="@chat.id"></i>
-                @if(chat.title.size > 25) {
-                    @{chat.title.take(25) + " ..."}
-                } else {
+        <li class="nav-item">
+            <a href="@controllers.routes.HomeController.loadChat(chat.id)" class="nav-link text-dark d-flex justify-content-between align-items-center chat-link" title="@chat.title">
+                
+                <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 10px;">
                     @chat.title
-                }
+                </span>
+                
+                <i class="delconvo fa-solid fa-trash-can text-muted" data-id="@chat.id" style="cursor: pointer;"></i>
             </a>
         </li>
         }
     </ul>
-</nav>
+</div>
+
 <script type="text/javascript">
     var selectedDatasets = [];
     $(document).ready(function() {
@@ -50,7 +56,7 @@
 
 
         $(".delconvo").on('click', function (event) {
-            event.preventDefault();
+            event.preventDefault(); // <-- THÊM DÒNG NÀY: Ngăn không cho click nhảy sang trang khác
             var chatId = $(this).data('id');
             const elem = $(this);
 
@@ -63,7 +69,7 @@
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 success: function(data){
-                    $(elem).parent().parent().remove();
+                    $(elem).parent().parent().remove(); // Xóa <li>
                     if (window.location.toString().includes(chatId)) {
                         window.location = '@controllers.routes.HomeController.index()';
                     }

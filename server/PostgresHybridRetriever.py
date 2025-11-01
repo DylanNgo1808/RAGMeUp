@@ -41,9 +41,9 @@ class PostgresHybridRetriever():
                         AND n.nspname = 'public'
                         AND c.relkind = 'i'
                     ) THEN
-                        CREATE INDEX ragmeup_sparse_embeddings_bm25 ON ragmeup_sparse_embeddings USING bm25 (id, content) WITH (key_field='id');
-                        CREATE INDEX idx_metadata_dense_dataset ON ragmeup_dense_embeddings (((metadata::jsonb ->> 'dataset')::text));
-                        CREATE INDEX idx_metadata_sparse_dataset ON ragmeup_sparse_embeddings (((metadata::jsonb->>'dataset')::text));
+                        -- CREATE INDEX ragmeup_sparse_embeddings_bm25 ON ragmeup_sparse_embeddings USING bm25 (id, content) WITH (key_field='id');
+                        -- CREATE INDEX idx_metadata_dense_dataset ON ragmeup_dense_embeddings (((metadata::jsonb ->> 'dataset')::text));
+                        -- CREATE INDEX idx_metadata_sparse_dataset ON ragmeup_sparse_embeddings (((metadata::jsonb->>'dataset')::text));
                     END IF;
                 END $$;
             """)
@@ -149,13 +149,13 @@ class PostgresHybridRetriever():
                                 id,
                                 content,
                                 metadata,
-                                paradedb.score(id) AS score_bm25,
+                                0.0 AS score_bm25,
                                 NULL::float AS distance,
                                 'bm25' AS source
                             FROM ragmeup_sparse_embeddings
-                            WHERE content @@@ %s AND {dataset_filter}
-                            ORDER BY score_bm25 DESC
-                            LIMIT %s
+                            -- WHERE content @@@ %s AND {dataset_filter}
+                            -- ORDER BY score_bm25 DESC
+                            -- LIMIT %s
                         ) bm25_results
 
                         UNION ALL

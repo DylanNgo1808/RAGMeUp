@@ -4,67 +4,96 @@
 @(files: Seq[JsObject])(implicit request: RequestHeader, flash: Flash)
 
 @main(Nil) {
-@flash.get("success") match {
-    case Some(message) => {
-        <div class="row" style="padding-top: 20px;">
-            <div class="offset-md-1 col-md-10 alert alert-success" role="alert">
+
+    @flash.get("success") match {
+        case Some(message) => {
+            <div class="alert alert-success" role="alert">
                 @message
             </div>
-        </div>
+        }
+        case None => {}
     }
-    case None => {}
-}
-@flash.get("error") match {
-    case Some(message) => {
-    <div class="row" style="padding-top: 20px;">
-        <div class="offset-md-1 col-md-10 alert alert-danger" role="alert">
-            @message
+    @flash.get("error") match {
+        case Some(message) => {
+        <div class="alert alert-danger" role="alert">
+                @message
         </div>
-    </div>
+        }
+        case None => {}
     }
-    case None => {}
-}
 
-<div class="row" style="margin: 20px;">
-    <div class="offset-md-1 col-md-10">
-        <form action="@controllers.routes.HomeController.upload()" method="post" enctype="multipart/form-data">
-            <div class="mb-3">
-                <label for="formFile" class="form-label">Upload a new document</label>
-                <input type="text" name="dataset" class="mb-2 form-control" placeholder="dataset name" required />
+    <div class="card mb-4">
+        <div class="card-body">
+            <h4 class="card-title">Add New Document</h4>
+            <p class="card-subtitle mb-3 text-muted">Upload files to a specific dataset.</p>
+            
+            <form action="@controllers.routes.HomeController.upload()" method="post" enctype="multipart/form-data">
                 <input type="hidden" name="csrfToken" value="@helper.CSRF.getToken.value" />
-                <input class="form-control fileupload" type="file" id="formFile" name="file[]" multiple="multiple">
+
+                <div class="mb-3">
+                    <label for="dataset" class="form-label">Dataset Name</label>
+                    <input type="text" name="dataset" id="dataset" class="form-control" 
+                           list="dataset-list" 
+                           placeholder="Select existing or type a new name" required />
+                    
+                    @defining(files.map(file => (file \ "dataset").as[String]).filter(_.nonEmpty).distinct.sorted) { uniqueDatasets =>
+                        <datalist id="dataset-list">
+                            @for(dataset <- uniqueDatasets) {
+                                <option value="@dataset"></option>
+                            }
+                        </datalist>
+                    }
+                    
+                    <div class="form-text">Documents grouped by dataset can be searched together.</div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="formFile" class="form-label">Upload Files</label>
+                    <input class="form-control fileupload" type="file" id="formFile" name="file[]" multiple="multiple" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa-solid fa-upload me-2"></i> Upload
+                </button>
+            </form>
+        </div>
+    </div>
+
+
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Manage Documents</h4>
+            <p class="card-subtitle mb-3 text-muted">The following documents are currently in the database.</p>
+            
+            <div class="table-responsive">
+                <table class="table" style="margin: 0;">
+                    @for(fileGroup <- files.sortBy(file => (file \ "dataset").as[String] + (file \ "filename").as[String]).grouped(6)){
+                    <tr>
+                        @for(file <- fileGroup){
+                            <td>
+                                <a href="@controllers.routes.HomeController.delete((file \ "filename").as[String])" style="text-decoration: none; padding-right: 10px;" title="Delete">
+                                    <i class="fa-solid fa-trash" style="color: #d40005;"></i>
+                                </a>
+                                <a href="@controllers.routes.HomeController.download((file \ "filename").as[String])" style="text-decoration: none;" title="Download">
+                                    @{(file \ "filename").as[String]}
+                                </a>
+                                <span class="text-muted" style="font-size: 0.9rem;">
+                                    (Dataset: @{if ((file \ "dataset").as[String].size > 0 ) (file \ "dataset").as[String] else {<i>NONE</i>}})
+                                </span>
+                            </td>
+                        }
+                    </tr>
+                    }
+                </table>
             </div>
-            <button type="submit" class="btn btn-primary">Upload</button>
-        </form>
+        </div>
     </div>
-</div>
 
-<div class="row" style="padding-top: 20px;">
-    <div class="offset-md-1 col-md-10">
-        <p style="font-size: 1.25rem;">
-            The following documents are currently in the database. Click on one to download.
-        </p>
-        <table class="table" style="margin: 20px;">
-            @for(fileGroup <- files.sortBy(file => (file \ "dataset").as[String] + (file \ "filename").as[String]).grouped(6)){
-            <tr>
-                @for(file <- fileGroup){
-                    <td>
-                        <a href="@controllers.routes.HomeController.delete((file \ "filename").as[String])" style="text-decoration: none; color: #ff6e6e; padding-right: 10px;"><i class="fa-solid fa-trash" style="color: #d40005;"></i></a>
-                        <a href="@controllers.routes.HomeController.download((file \ "filename").as[String])" style="text-decoration: none; color: #364196;">@{(file \ "filename").as[String]}</a>
-                        (dataset: @{if ((file \ "dataset").as[String].size > 0 ) (file \ "dataset").as[String] else {<i>NONE</i>}})
-                    </td>
-                }
-            </tr>
-            }
-        </table>
-    </div>
-</div>
-
-<script type="text/javascript">
-    $(document).ready(function() {
-        setTimeout(function() {
-            $(".alert").parent().remove();
-        }, 5000);
-    });
-</script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            setTimeout(function() {
+                $(".alert").fadeOut("slow", function() { $(this).remove(); });
+            }, 5000);
+        });
+    </script>
 }

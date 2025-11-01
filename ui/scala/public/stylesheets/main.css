@@ -1,237 +1,239 @@
+/* =================================================================== */
+/* 1. LAYOUT CƠ BẢN (Đã dọn dẹp)
+/* =================================================================== */
+
 body, html {
-    height: 100%;
-    color: #0e0e0e;
+    height: 100vh;
     font-family: Inter, "Noto Sans", sans-serif;
-    overflow-y: auto;
-    overflow-x: hidden;
-}
-.container {
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-.card {
-    background-color: #eeeeee;
-    padding: 20px;
-    border-radius: 15px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-}
-.card-title {
-    font-size: 28px;
-    text-align: center;
-    margin-bottom: 20px;
-}
-.form-control {
-    background-color: rgba(255, 255, 255, 0.08);
-    color: #000;
-    border: none;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    border-radius: 5px;
-}
-input[type="text"].form-control {
-    border: 1px solid #ccc;
+    overflow: hidden;
+    /* ĐÃ THÊM:
+      Sử dụng màu nền xám nhạt (giống Sidekick) làm mặc định.
+      Điều này sẽ áp dụng cho cột chat (col-9).
+    */
+    background-color: #f8f9fa;
 }
 
-.btn-primary {
-    background-image: linear-gradient(to right, #1980e6, #0e5dab);
-    border: none;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-    border-radius: 5px;
-    outline: none; /* Remove focus border */
-}
+/* ĐÃ XÓA:
+  Xóa các style .container, .card, .btn-primary, .form-control cũ.
+  Chúng ta sẽ để theme "Materia" (Bootswatch) xử lý chúng,
+  và chỉ tùy chỉnh những gì cần thiết.
+*/
 
-.btn-primary:hover {
-    background-image: linear-gradient(to right, #3d90e3, #246cb3);
-}
+/* =================================================================== */
+/* 2. SIDEBAR (THANH BÊN TRÁI - Style nâng cao)
+/* =================================================================== */
 
-.btn-primary:focus {
-    box-shadow: 0 0 0 0.2rem rgba(253, 185, 155, 0.5);
-}
-.card {
+/* Định dạng các nút chọn dataset */
+.dataset-item {
     cursor: pointer;
-    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    transition: all 0.2s ease;
+    background-color: #f1f5f9; /* Màu xám nhạt */
+    border-radius: 20px;
+    margin: 2px 3px;
+    padding: 2px 10px;
+    border: 1px solid #e2e8f0;
+    font-size: 0.9rem;
 }
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+.dataset-item:hover {
+    background-color: #e2e8f0;
 }
+.dataset-item.selected {
+    background-color: #e0e7ff; /* Màu xanh nhạt */
+    border-color: #c7d2fe;
+    color: #1e3a8a;
+    font-weight: bold;
+}
+
+/* NÂNG CẤP:
+  Định dạng link "Previous Chats" cho giống Sidekick.
+*/
+.chat-link {
+    padding: 8px 12px !important; /* Ghi đè padding cũ */
+    border-radius: 8px !important;
+    transition: background-color 0.2s ease;
+    font-size: 0.9rem !important; /* Cho chữ nhỏ lại, tinh tế hơn */
+    color: #333 !important; /* Đảm bảo màu chữ là màu đen */
+}
+.chat-link:hover {
+    background-color: #f1f5f9 !important; /* Màu nền khi hover (giống Sidekick) */
+}
+
+/* Ẩn thùng rác, chỉ hiện khi hover (Giống Sidekick) */
+.delconvo {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+.chat-link:hover .delconvo {
+    opacity: 1;
+}
+
+/* =SAO CHÉP TỪ SIDEKICK: Style cho tiêu đề (Previous chats, etc.) */
+.text-muted {
+    font-size: 0.8rem !important;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding-left: 10px;
+}
+
+
+/* =================================================================== */
+/* 3. KHUNG CHAT (BONG BÓNG CHAT - Style nâng cao)
+/* =================================================================== */
+
+/* NÂNG CẤP:
+  Đây là bong bóng chat của BOT (Agent) (Nền trắng, viền nhẹ)
+*/
+.label-agent {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 12px 18px;
+    margin: 10px;
+    max-width: 85%;
+    color: #333;
+    font-weight: 400;
+    line-height: 1.5;
+    word-wrap: break-word; /* Đảm bảo không bị tràn */
+}
+
+/* NÂNG CẤP:
+  Đây là bong bóng chat của BẠN (Human) (Nền xám, giống Sidekick)
+*/
+.label-human {
+    background: #f1f5f9; /* Màu xám nhạt (giống Sidekick) */
+    color: #333; /* Màu chữ đen */
+    border-radius: 12px;
+    padding: 12px 18px;
+    margin: 10px;
+    max-width: 85%;
+    font-weight: 400;
+    line-height: 1.5;
+    word-wrap: break-word;
+}
+
+/* Sửa lỗi padding của thẻ <p> bên trong bong bóng chat */
+.label-agent label > p,
+.label-human label > p {
+    margin-bottom: 0;
+}
+
+/* =================================================================== */
+/* 4. THANH NHẬP LIỆU (Style nâng cao - Giống Sidekick)
+/* =================================================================== */
+
+/* NÂNG CẤP:
+  Biến card-footer (chứa thanh nhập liệu) thành trong suốt
+  để làm thanh nhập liệu "nổi" lên.
+*/
+#chatinputcontainer.card-footer {
+    background-color: transparent; /* Nền trong suốt */
+    border-top: none; /* Bỏ viền trên */
+    padding: 1rem;
+}
+
+/* NÂNG CẤP:
+  Biến .input-group thành một "viên thuốc" (pill) màu trắng
+  có viền và bóng mờ.
+*/
+#inputbar.input-group {
+    border-radius: 25px; /* Bo tròn toàn bộ group */
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    overflow: hidden; /* Quan trọng: để bo tròn các góc bên trong */
+}
+
+/* NÂNG CẤP:
+  Làm cho ô input BÊN TRONG group trong suốt, không viền.
+*/
+#inputbar .form-control {
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    height: 48px; /* Cho thanh nhập liệu cao hơn */
+    padding-left: 20px;
+}
+
+/* NÂNG CẤP:
+  Làm cho nút "Go!" BÊN TRONG group cũng trong suốt, không viền.
+*/
+#inputbar .btn {
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    color: #0d6efd; /* Giữ màu chữ xanh của nút */
+    font-weight: 600;
+}
+#inputbar .btn:hover {
+    background: #f1f5f9 !important; /* Thêm hiệu ứng hover nhẹ */
+}
+
+
+/* =================================================================== */
+/* 5. CÁC STYLE KHÁC (Đã dọn dẹp)
+/* =================================================================== */
+
+/* Sửa lỗi hiển thị loader (chấm ...) */
 #loader {
     display: flex;
     margin: auto;
     width: 100%;
     z-index: 1000;
-    background: rgba(255, 255, 255, 0.8);
     justify-content: center;
     align-items: center;
     font-size: 2rem;
-    color: #fff;
-}
-.article {
-    border: 1px solid #334;
-    border-radius: 5px;
-    padding: 25px;
-}
-.label-agent, .label-human {
-    overflow: hidden;
-    margin: 0;
-    color: #343434;
-    font-family: Roboto;
-    font-weight: 600;
-    margin: 15px;
-}
-.label-agent {
-    background: #ffffff;
-    border: 1px solid #bebebe;
-    border-radius: 16px;
-    padding: 1.25rem 1.5rem;
-    margin-left: 25px;
-}
-.label-human {
-    background: rgb(25 128 230);
-    color: rgb(248 250 252);
-    border-radius: 16px;
-    padding: 1.25rem 1.5rem;
-    margin-right: 25px;
-}
-label > p {
-    margin-bottom: 0px;
-}
-.clearfix {
-    clear: both;
-}
-.chatinput {
-    position: fixed;
-    bottom: 50px;
-}
-#dialogue {
-  overflow-x: hidden;
-  overflow-y: auto;
-  margin-bottom: 150px;
-  height: 700px;
-}
-.message-row {
-  display: block;
-  margin-bottom: 20px;
-}
-.doclist {
-  padding: 10px;
-  font-size: 0.9em;
-  color: #777;
-}
-.doclink {
-    display: block;
-    padding-top:1px;
-    padding-bottom: 1px;
-    color: #777;
-    font-size: 0.9em;
-}
-.doclink:hover {
-    color: #666;
-}
-.doclink:active {
-    color: #555;
-}
-.doccontent {
-    color: #777;
-    font-size: 0.9em;
-    padding-top: 5px;
-    padding-bottom: 1px;
+    color: #333;
 }
 
-$dot-width: 10px;
-$dot-color: #3b5998;
-$speed: 1.5s;
-
+/* Sửa lỗi SCSS hỏng (Giữ nguyên) */
 .typing {
   position: relative;
-
-  span {
-    content: '';
-    animation: blink $speed infinite;
-    animation-fill-mode: both;
-    height: $dot-width;
-    width: $dot-width;
-    background: $dot-color;
-    position: absolute;
-    left:0;
-    top:0;
-    border-radius: 50%;
-
-    &:nth-child(2) {
-      animation-delay: .2s;
-      margin-left: $dot-width * 1.5;
-    }
-
-    &:nth-child(3) {
-      animation-delay: .4s;
-      margin-left: $dot-width * 3;
-    }
-  }
+  height: 10px;
 }
-
-
+.typing span {
+  animation: blink 1.5s infinite;
+  animation-fill-mode: both;
+  height: 10px;
+  width: 10px;
+  background: #3b5998;
+  position: absolute;
+  left: 0;
+  top: 0;
+  border-radius: 50%;
+}
+.typing span:nth-child(2) {
+  animation-delay: .2s;
+  margin-left: 15px;
+}
+.typing span:nth-child(3) {
+  animation-delay: .4s;
+  margin-left: 30px;
+}
 @keyframes blink {
-  0% {
-    opacity: .1;
-  }
-  20% {
-    opacity: 1;
-  }
-  100% {
-    opacity: .1;
-  }
+  0% { opacity: .1; }
+  20% { opacity: 1; }
+  100% { opacity: .1; }
 }
 
+/* Style cho danh sách tài liệu (dưới bong bóng chat) (Giữ nguyên) */
 .documentdiv {
     max-height: 40vh;
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: #888 transparent;
-    -ms-overflow-style: none;
 }
-
 .documentdiv::-webkit-scrollbar {
     width: 8px;
     background-color: transparent;
 }
-
 .documentdiv::-webkit-scrollbar-thumb {
     background-color: #888;
     border-radius: 4px;
-    transition: background-color 0.3s ease;
 }
-
-.documentdiv::-webkit-scrollbar-thumb:hover {
-    background-color: #555;
-}
-
-.documentdiv::-webkit-scrollbar-track {
-    background-color: transparent;
-}
-
 .hidden {
     display: none !important;
 }
-
 .documentshown {
     background-color: #dee2e6 !important;
-}
-
-.dataset-item {
-    cursor: pointer;
-    transition: all 0.2s ease;
-    background-color: #f8f9fa;
-    border-radius: 20px;
-    margin: 1px 5px 1px 5px;
-    padding: 2px 10px 2px 10px;
-    border: 1px solid #555;
-}
-.dataset-item:hover {
-    background-color: #e9ecef;
-}
-.dataset-item.selected {
-    background-color: #B4CFEC;
-    font-weight: bold;
 }
